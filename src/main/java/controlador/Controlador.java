@@ -12,17 +12,19 @@ import java.util.Collections;
 
 public class Controlador {
 
-
+    //Atributos
     private DAOManager dao;
 
     // Constructor
 
     public Controlador() {
+        // Establecemos la conexión con la base de datos
         dao = DAOManager.getSinglentonInstance();
     }
 
     // Metodos
 
+    // Metodo que trae desde la base de datos a todos los usuarios y los mete en una ArrayList
     public ArrayList<Usuario> getUsuarios () {
         ArrayList<Usuario> usuarios = new ArrayList<>();
         DAOUsuarioSQL daoUsuarioSQL = new DAOUsuarioSQL();
@@ -36,6 +38,7 @@ public class Controlador {
         }
     }
 
+    // Metodo que trae desde la base de datos a todos los fichajes de los usuarios y los mete en una ArrayList
     public ArrayList<Fichaje> getFichajes () {
         ArrayList<Fichaje> fichajes = new ArrayList<>();
         DAOFichajeSQL daoFichajeSQL = new DAOFichajeSQL();
@@ -51,6 +54,7 @@ public class Controlador {
         return fichajes;
     }
 
+    // Metodo que busca entre todos los usuarios al que corresponda con la clave introducida
     public Usuario login(int clave) {
         ArrayList<Usuario> usuarios = getUsuarios();
         for (Usuario u : usuarios)
@@ -58,6 +62,7 @@ public class Controlador {
         return null;
     }
 
+    // Metodo que registra un fichaje de un usuario pasado por parámetros
     public boolean registraFichaje (Usuario usuario, String tipoFichaje) {
         int nuevaId = generaIdFichaje();
         Fichaje fichajeInsertado = new Fichaje(nuevaId,usuario,tipoFichaje, LocalDateTime.now());
@@ -73,6 +78,8 @@ public class Controlador {
         }
     }
 
+    // Metodo que se fija en el último fichaje de un usuario pasado por parametros y decide si su nuevo fichaje
+    // será de entrada o salida
     public String generaTipoNuevoFichaje(Usuario usuario) {
         ArrayList<Fichaje> fichajes = getFichajes();
 
@@ -88,6 +95,7 @@ public class Controlador {
         return getFichajes().size();
     }
 
+    // Metodo que comprueba si un usuario es un admin
     public boolean compruebaAdmin(Usuario usuario) {
         return usuario.getNombre().equalsIgnoreCase("Admin") && usuario.getClave() == 1234;
     }

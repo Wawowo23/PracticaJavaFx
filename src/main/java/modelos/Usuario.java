@@ -2,6 +2,7 @@ package modelos;
 
 public class Usuario {
 
+    // Atributos
     private int id;
     private int clave;
     private String nombre;
@@ -41,6 +42,8 @@ public class Usuario {
     }
 
     // Otros metodos
+
+    // Metodo que comprueba si la clave introducida corresponde con la del usuario
     public boolean login(int clave) {
         return this.clave == clave;
     }

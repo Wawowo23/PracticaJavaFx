@@ -13,8 +13,7 @@ import javafx.scene.*;
 import javafx.scene.image.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
+import javafx.scene.text.*;
 import javafx.stage.*;
 import javafx.scene.control.*;
 import modelos.Fichaje;
@@ -27,6 +26,7 @@ import java.util.ArrayList;
 
 public class AplicacionFichajes extends Application {
 
+    // Declaramos ya el escenario y las distintas escenas de la aplicación
     private Stage stage;
     private VBox vbox;
     private Scene scene;
@@ -47,7 +47,9 @@ public class AplicacionFichajes extends Application {
 
     }
 
+    // Función con la que creamos la primera escena de la aplicación
     private void creaEscena1 (Controlador controlador) {
+        // Creamos primero el logo de la empresa
         ImageView vistaLogo = new ImageView(new Image(getClass().getResourceAsStream("/logo.png")));
         vistaLogo.setFitWidth(75);
         vistaLogo.setFitHeight(75);
@@ -55,15 +57,18 @@ public class AplicacionFichajes extends Application {
         vistaLogo.setPreserveRatio(true);
         StackPane.setAlignment(vistaLogo,Pos.TOP_CENTER);
 
+        // Creamos el subtitulo de la aplicación
         Label subtitulo = new Label("I.E.S. Fernando III - Entrada Principal");
         subtitulo.setFont(Font.font("Arial", FontWeight.BOLD, 20));
         StackPane.setAlignment(subtitulo,Pos.BOTTOM_CENTER);
 
+        // Metemos el logo y subtitulo en un bloque cabecera
         StackPane cabecera = new StackPane();
         cabecera.setPrefHeight(70);
         cabecera.getChildren().addAll(vistaLogo,subtitulo);
         VBox.setMargin(cabecera,new Insets(15,60,15,20));
 
+        // Creamos el area donde el usuario introducirá su clave, creamos una donde esta sea visible y otra en la que no
         PasswordField claveOculta = new PasswordField();
         claveOculta.setPromptText("Inserte su clave");
         StackPane.setAlignment(claveOculta,Pos.CENTER);
@@ -75,14 +80,17 @@ public class AplicacionFichajes extends Application {
         claveMostrada.setManaged(false);
         claveMostrada.setVisible(false);
 
+        // Creamos el boton en el que el usuario hará click para fichar
         Button botonInicioSesion = new Button("Confirmar");
         StackPane.setAlignment(botonInicioSesion,Pos.CENTER_RIGHT);
 
+        // Metemos el area de contraseña y este ultimo botón en un mismo bloque
         StackPane bloqueClaves = new StackPane();
         bloqueClaves.setAlignment(Pos.CENTER);
         bloqueClaves.getChildren().addAll(claveOculta,claveMostrada,botonInicioSesion);
         VBox.setMargin(bloqueClaves,new Insets(15,20,15,20));
 
+        // Creamos el checkbox en el que podremos cambiar la visibilidad del area de la contraseña
         CheckBox mostrarClave = new CheckBox("Mostrar clave");
         StackPane.setAlignment(mostrarClave,Pos.CENTER_LEFT);
         VBox.setMargin(mostrarClave,new Insets(5,20,5,5));
@@ -93,6 +101,7 @@ public class AplicacionFichajes extends Application {
         claveOculta.visibleProperty().bind(mostrarClave.selectedProperty().not());
 
 
+        // Establecemos la funcionalidad del boton de chequeo
         botonInicioSesion.setOnAction(actionEvent -> {
             int clave = -1;
             try {
@@ -103,13 +112,16 @@ public class AplicacionFichajes extends Application {
                 claveMostrada.clear();
                 claveOculta.clear();
             }
+            // Comprobamos d eque usuario es la clave
             Usuario usuario = controlador.login(clave);
             if (usuario == null)
                 loginFallido();
             else {
+                // Comprobamos si el usuario es admin
                 if (controlador.compruebaAdmin(usuario))
                     mostrarEscenaAdmin(controlador);
                 else {
+                    // Comprobamos si el usuario está chequeando su entrada o su salida
                     String tipoFichaje = controlador.generaTipoNuevoFichaje(usuario);
                     controlador.registraFichaje(usuario, tipoFichaje);
                     if (tipoFichaje.equals("Entrada"))
@@ -123,6 +135,7 @@ public class AplicacionFichajes extends Application {
         });
 
 
+        // Creamos el reloj de la aplicación
         Label labelReloj = new Label();
         AnimationTimer reloj = new AnimationTimer() {
             @Override
@@ -134,6 +147,7 @@ public class AplicacionFichajes extends Application {
         };
         reloj.start();
 
+        // Creamos el panel numérico y añadimos sus botones con sus funcionalidades
         GridPane panelNumerico = new GridPane();
         panelNumerico.setHgap(10);
         panelNumerico.setVgap(10);
@@ -181,23 +195,24 @@ public class AplicacionFichajes extends Application {
 
         labelReloj.setFont(Font.font("Arial", FontWeight.BOLD, 20));
 
-        // Panel numérico dentro de un VBox para asegurar su alineación vertical
+        // Creamos distintos bloques para poder alinear correctamente el reloj y el panel numérico
         VBox bloquePanelNumerico = new VBox(10, panelNumerico);
         bloquePanelNumerico.setAlignment(Pos.BOTTOM_CENTER);
         bloquePanelNumerico.setPadding(new Insets(40));
 
-        // Colocamos el reloj a la izquierda
+
         VBox relojVBox = new VBox(labelReloj);
         relojVBox.setAlignment(Pos.TOP_CENTER);
         relojVBox.setPadding(new Insets(0, 20, 0, 0));
 
-        // HBox principal para juntar reloj y panel numérico
+
         HBox contenedorCentro = new HBox(20, relojVBox, bloquePanelNumerico);
         contenedorCentro.setAlignment(Pos.CENTER);
         VBox.setMargin(contenedorCentro, new Insets(15));
 
 
 
+        // Configuramos y agregamos los nodos a la escena
         vbox = new VBox();
         vbox.setSpacing(5);
         vbox.setAlignment(Pos.CENTER);
@@ -210,6 +225,7 @@ public class AplicacionFichajes extends Application {
 
     }
 
+    // Función por la cual establecemos la escena del escenario a que sea la del admin
     private void mostrarEscenaAdmin(Controlador controlador) {
         creaEscenaAdmin(controlador);
         adminScene.setFill(Color.WHITE);
@@ -218,6 +234,7 @@ public class AplicacionFichajes extends Application {
         stage.show();
     }
 
+    // Fucnión con la que creamos la escena del admin
     private void creaEscenaAdmin(Controlador controlador) {
         TableView<Fichaje> tablaFichajes = new TableView<>();
         TableColumn<Fichaje, String> nombre = new TableColumn<>("Nombre");
@@ -267,6 +284,7 @@ public class AplicacionFichajes extends Application {
 
     }
 
+    // Función que muestra el mensaje de alerta de fichaje de salida
     private void mensajeFichajeSalida() {
         Alert mensajeFichaje = new Alert(Alert.AlertType.CONFIRMATION);
         mensajeFichaje.setTitle("Fichaje de salida");
@@ -275,6 +293,7 @@ public class AplicacionFichajes extends Application {
         mensajeFichaje.showAndWait();
     }
 
+    // Función que muestra el mensaje de alerta de fichaje de entrada
     private void mensajeFichajeEntrada() {
         Alert mensajeFichaje = new Alert(Alert.AlertType.CONFIRMATION);
         mensajeFichaje.setTitle("Fichaje de entrada");
@@ -283,6 +302,7 @@ public class AplicacionFichajes extends Application {
         mensajeFichaje.showAndWait();
     }
 
+    // Función que muestra el mensaje de alerta de que el fichaje ha sido erróneo
     private void loginFallido() {
         Alert mensajeLoginFallido = new Alert(Alert.AlertType.INFORMATION);
         mensajeLoginFallido.setTitle("Inicio de sesión Fallido");
